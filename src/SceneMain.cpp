@@ -31,9 +31,9 @@ void SceneMain::render()
     //渲染玩家
     if (!isDead) {
         SDL_Rect playerRect = { static_cast<int>(player.position.x), 
-        static_cast<int>(player.position.y), 
-        player.width, 
-        player.height};
+                                static_cast<int>(player.position.y), 
+                                player.width, 
+                                player.height};
         SDL_RenderCopy(game.getRenderer(), player.texture, NULL, &playerRect);
     }
 
@@ -77,14 +77,13 @@ void SceneMain::init()
     explosionTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/effect/explosion.png");
     SDL_QueryTexture(explosionTemplate.texture, NULL, NULL, &explosionTemplate.width, &explosionTemplate.height);
     explosionTemplate.totalFrame = explosionTemplate.width/explosionTemplate.height;
-    explosionTemplate.height /= 2;
-    explosionTemplate.width /= explosionTemplate.height;
+    explosionTemplate.width = explosionTemplate.height;
 }
 
 void SceneMain::clean()
 {
     //清理容器
-    for (auto projectile : projectilesPlayer)
+    for (auto &projectile : projectilesPlayer)
     {
         if (projectile != nullptr)
         {
@@ -92,7 +91,7 @@ void SceneMain::clean()
         }
     }
     projectilesPlayer.clear();
-    for (auto enemy : enemies)
+    for (auto &enemy : enemies)
     {
         if (enemy != nullptr)
         {
@@ -101,7 +100,7 @@ void SceneMain::clean()
     }
     enemies.clear();
 
-    for (auto projectile : projectilesEnemy)
+    for (auto &projectile : projectilesEnemy)
     {
         if (projectile != nullptr)
         {
@@ -109,7 +108,7 @@ void SceneMain::clean()
         }
     }
     projectilesEnemy.clear();
-    for (auto explosion : explosions)
+    for (auto &explosion : explosions)
     {
         if (explosion != nullptr)
         {
@@ -275,8 +274,8 @@ void SceneMain::updateEnemies(float deltaTime)
             delete enemy;
             it = enemies.erase(it);
         }
-        else{
-            if (currentTime - enemy->lastShootTime > enemy->coolDown && isDead == false)
+        else{          
+            if ((currentTime - enemy->lastShootTime > enemy->coolDown) && (isDead == false))
             {
                 shootEnemy(enemy);
                 enemy->lastShootTime = currentTime;
@@ -405,12 +404,12 @@ void SceneMain::updatePlayer()
     if (player.currentHealth <= 0){
         //game over
         isDead = true;
-        auto currentTime = SDL_GetTicks();
-        auto explosion = new Explosion(explosionTemplate);
-        explosion->position.x = player.position.x + player.width/2 - explosion->width/2;
-        explosion->position.y = player.position.y + player.height/2 - explosion->height/2;
-        explosion->startTime = currentTime;
-        explosions.push_back(explosion);
+            auto currentTime = SDL_GetTicks();
+            auto explosion = new Explosion(explosionTemplate);
+            explosion->position.x = player.position.x + player.width/2 - explosion->width/2;
+            explosion->position.y = player.position.y + player.height/2 - explosion->height/2;
+            explosion->startTime = currentTime;
+            explosions.push_back(explosion);
         return;
     }
     for(auto enemy : enemies)
@@ -422,7 +421,6 @@ void SceneMain::updatePlayer()
         {
             player.currentHealth -= 1;
             enemy->currentHealth = 0;
-            enemyExplode(enemy);
         }
     }
 }
@@ -436,7 +434,7 @@ void SceneMain::updateExplosions()
         explosion->currentFrame = (currentTime - explosion->startTime)*explosion->FPS / 1000;
         if (explosion->currentFrame >= explosion->totalFrame){
             delete explosion;
-            explosions.erase(it);
+            it = explosions.erase(it);
         }
         else{
             ++it;

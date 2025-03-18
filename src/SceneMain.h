@@ -50,7 +50,6 @@ private:
     std::list<Enemy*> enemies;
     std::list<projectileEnemy*> projectilesEnemy;
     std::list<Explosion*> explosions;
-    
 };
 
 #endif

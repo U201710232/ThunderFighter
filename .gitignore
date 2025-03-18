@@ -3,4 +3,4 @@
 *.pdb
 *.obj
 *.tlog
-build/
+build/*

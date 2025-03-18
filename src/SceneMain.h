@@ -33,6 +33,10 @@ public:
     void updatePlayer();
     void updateExplosions();
     void renderExplosions();
+    void dropItem(Enemy* enemy);
+    void updateItems(float deltaTime);
+    void renderItems();
+    void playerGetItem(Item* item);
 private:
     Player player;
     Game &game;
@@ -45,11 +49,13 @@ private:
     Enemy enemyTemplate;
     projectileEnemy projectileEnemyTemplate;
     Explosion explosionTemplate;
+    Item itemHealthTemplate;
     //创建容器
     std::list<ProjectilePlayer*> projectilesPlayer;
     std::list<Enemy*> enemies;
     std::list<projectileEnemy*> projectilesEnemy;
     std::list<Explosion*> explosions;
+    std::list<Item*> items;
 };
 
 #endif

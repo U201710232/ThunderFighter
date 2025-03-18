@@ -22,6 +22,7 @@ void SceneMain::update(float deltaTime)
     updateEnemyProjectiles(deltaTime);
     updatePlayer();
     updateExplosions();
+    updateItems(deltaTime);
 }
 
 void SceneMain::render()
@@ -41,8 +42,11 @@ void SceneMain::render()
     renderEnemies();
     //渲染敌人子弹
     renderEnemyProjectiles();
+    //渲染道具
+    renderItems();
     //渲染爆炸特效
     renderExplosions();
+    
     
 }
 
@@ -66,18 +70,26 @@ void SceneMain::init()
     //初始化模板
     projectileTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/laser-3.png");
     SDL_QueryTexture(projectileTemplate.texture, NULL, NULL, &projectileTemplate.width, &projectileTemplate.height);
+    
     enemyTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/insect-1.png");
     SDL_QueryTexture(enemyTemplate.texture, NULL, NULL, &enemyTemplate.width, &enemyTemplate.height);
     enemyTemplate.width /= 2;
     enemyTemplate.height /= 2;
+
     projectileEnemyTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/bullet-1.png");
     SDL_QueryTexture(projectileEnemyTemplate.texture, NULL, NULL, &projectileEnemyTemplate.width, &projectileEnemyTemplate.height);
     projectileEnemyTemplate.width /= 2;
     projectileEnemyTemplate.height /= 2;
+
     explosionTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/effect/explosion.png");
     SDL_QueryTexture(explosionTemplate.texture, NULL, NULL, &explosionTemplate.width, &explosionTemplate.height);
     explosionTemplate.totalFrame = explosionTemplate.width/explosionTemplate.height;
     explosionTemplate.width = explosionTemplate.height;
+
+    itemHealthTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/bonus_life.png");
+    SDL_QueryTexture(itemHealthTemplate.texture, NULL, NULL, &itemHealthTemplate.width, &itemHealthTemplate.height);
+    itemHealthTemplate.width /= 2;
+    itemHealthTemplate.height /= 2;
 }
 
 void SceneMain::clean()
@@ -116,6 +128,14 @@ void SceneMain::clean()
         }
     }
     explosions.clear();
+    for(auto &item : items)
+    {
+        if (item != nullptr)
+        {
+            delete item;
+        }
+    }
+    items.clear();
     //清理玩家
     if (player.texture != NULL)
     {
@@ -131,6 +151,9 @@ void SceneMain::clean()
     }
     if (projectileEnemyTemplate.texture != nullptr) {
         SDL_DestroyTexture(projectileEnemyTemplate.texture);
+    }
+    if (itemHealthTemplate.texture != nullptr) {
+        SDL_DestroyTexture(itemHealthTemplate.texture);
     }
 }
 
@@ -210,18 +233,8 @@ void SceneMain::updateProjectilesPlayer(float deltaTime)
         else{
             bool hit = false;
             for (auto enemy : enemies){
-                SDL_Rect enemyRect = {
-                    static_cast<int>(enemy->position.x),
-                    static_cast<int>(enemy->position.y),
-                    enemy->width,
-                    enemy->height
-                };
-                SDL_Rect projectileRect = {
-                    static_cast<int>(projectile->position.x),
-                    static_cast<int>(projectile->position.y),
-                    projectile->width,
-                    projectile->height
-                };
+                SDL_Rect enemyRect = enemy->getRect();
+                SDL_Rect projectileRect = projectile->getRect();
                 if (SDL_HasIntersection(&enemyRect, &projectileRect)){
                     enemy->currentHealth -= projectile->damage;
                     delete projectile;
@@ -393,6 +406,9 @@ void SceneMain::enemyExplode(Enemy *enemy)
     explosion->position.y = enemy->position.y + enemy->height/2 - explosion->height/2;
     explosion->startTime = currentTime;
     explosions.push_back(explosion);
+    if (dis(gen)<0.8){
+        dropItem(enemy);
+    }
     delete enemy;
 }
 
@@ -452,5 +468,88 @@ void SceneMain::renderExplosions()
         SDL_Rect explosionRect = explosion->getRect();
 
         SDL_RenderCopy(game.getRenderer(), explosion->texture, &explosionDisRect, &explosionRect);
+    }
+}
+
+void SceneMain::dropItem(Enemy *enemy)
+{
+    auto item = new Item(itemHealthTemplate);
+    item->position.x = enemy->position.x + enemy->width/2 - item->width/2;
+    item->position.y = enemy->position.y + enemy->height/2 - item->height/2;
+    auto angle = dis(gen)*360;
+    item->direction.x = cos(angle);
+    item->direction.y = sin(angle);
+    items.push_back(item);
+}
+
+void SceneMain::updateItems(float deltaTime)
+{
+    for(auto it = items.begin(); it != items.end();)
+    {
+        auto item = *it;
+        //如果超出屏幕范围就删除
+        if (item->position.x < -item->width || 
+            item->position.x > game.getWindowWidth() || 
+            item->position.y < -item->height || 
+            item->position.y > game.getWindowHeight())
+        {
+            delete item;
+            it = items.erase(it);
+        }
+        else
+        {   
+            //更新位置
+            item->position.x += item->direction.x * item->speed * deltaTime;
+            item->position.y += item->direction.y * item->speed * deltaTime;
+            //判断反弹
+            if (item->bounceTimes > 0){
+                if (item->position.x < 0 || item->position.x > game.getWindowWidth() - item->width)
+                {
+                    item->direction.x = -item->direction.x;
+                    item->bounceTimes--;
+                }
+                if (item->position.y < 0 || item->position.y > game.getWindowHeight() - item->height)
+                {
+                    item->direction.y = -item->direction.y;
+                    item->bounceTimes--;
+                }
+            }
+            
+            
+            auto playerRect = player.getRect();
+            auto itemRect = item->getRect();
+            if (SDL_HasIntersection(&playerRect, &itemRect))
+            {
+                playerGetItem(item);
+                delete item;
+                it = items.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+    
+}
+
+void SceneMain::renderItems()
+{
+    for(auto &item : items)
+    {
+        SDL_Rect itemRect = item->getRect();
+        SDL_RenderCopy(game.getRenderer(), item->texture, NULL, &itemRect);
+    }
+}
+
+void SceneMain::playerGetItem(Item *item)
+{
+    if(item->type == ItemType::Health)
+    {
+        player.currentHealth += 1;
+        if (player.currentHealth > player.maxHealth)
+        {
+            player.currentHealth = player.maxHealth;
+        }
     }
 }

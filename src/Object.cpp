@@ -47,3 +47,11 @@ SDL_Rect Explosion::getRect()
                     width, 
                     height};
 }
+
+SDL_Rect Item::getRect()
+{
+    return SDL_Rect{static_cast<int>(position.x),
+                    static_cast<int>(position.y),
+                    width, 
+                    height};
+}

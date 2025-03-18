@@ -90,4 +90,12 @@ struct Background{
     int speed = 30;
 };
 
+struct UiHealth{
+    SDL_Texture *texture = nullptr;
+    SDL_FPoint position = {30,30};
+    int width = 50;
+    int height = 50;
+    int offset = 50;
+};
+
 #endif

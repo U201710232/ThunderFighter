@@ -118,8 +118,12 @@ void Game::init()
     //初始化背景卷轴
     nearStars.texture = IMG_LoadTexture(renderer, "assets/image/Stars-A.png");
     SDL_QueryTexture(nearStars.texture, NULL, NULL, &nearStars.width, &nearStars.height);
+    nearStars.height /= 2;
+    nearStars.width /=2;
     farStars.texture = IMG_LoadTexture(renderer, "assets/image/Stars-B.png");
     SDL_QueryTexture(farStars.texture, NULL, NULL, &farStars.width, &farStars.height);
+    farStars.height /= 2;
+    farStars.width /=2;
     farStars.speed = 15;
 
     currentScene = new SceneMain();

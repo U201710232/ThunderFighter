@@ -46,6 +46,8 @@ void SceneMain::render()
     renderItems();
     //渲染爆炸特效
     renderExplosions();
+    //渲染血量ui
+    renderHealthUI();
     
     
 }
@@ -106,6 +108,10 @@ void SceneMain::init()
     SDL_QueryTexture(itemHealthTemplate.texture, NULL, NULL, &itemHealthTemplate.width, &itemHealthTemplate.height);
     itemHealthTemplate.width /= 2;
     itemHealthTemplate.height /= 2;
+
+    //初始化ui
+    uiHealth.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/Health UI Black.png");
+    SDL_QueryTexture(uiHealth.texture, NULL, NULL, &uiHealth.width, &uiHealth.height);
 
 
 }
@@ -180,6 +186,10 @@ void SceneMain::clean()
     }
     if (itemHealthTemplate.texture != nullptr) {
         SDL_DestroyTexture(itemHealthTemplate.texture);
+    }
+    //清理ui
+    if (uiHealth.texture != nullptr) {
+        SDL_DestroyTexture(uiHealth.texture);
     }
     //清理音乐资源
     if(bgm!=nullptr){
@@ -583,3 +593,20 @@ void SceneMain::playerGetItem(Item *item)
     Mix_PlayChannel(-1, sounds["get_item"], 0);
 }
 
+void SceneMain::renderHealthUI()
+{
+    for (int i = 0; i < player.maxHealth; i++)
+    {
+        SDL_Rect uiHealthRect = {uiHealth.position.x + i*uiHealth.offset, uiHealth.position.y, uiHealth.width, uiHealth.height};
+        if (i < player.currentHealth)
+        {
+            SDL_SetTextureColorMod(uiHealth.texture, 255, 255, 255);
+            SDL_RenderCopy(game.getRenderer(), uiHealth.texture, NULL, &uiHealthRect);
+        }
+        else
+        {
+            SDL_SetTextureColorMod(uiHealth.texture, 100, 100, 100);
+            SDL_RenderCopy(game.getRenderer(), uiHealth.texture, NULL, &uiHealthRect);
+        }
+    }
+}

@@ -40,10 +40,12 @@ public:
     void updateItems(float deltaTime);
     void renderItems();
     void playerGetItem(Item* item);
+    void renderHealthUI();
 private:
     Player player;
     Game &game;
     Mix_Music* bgm;
+    UiHealth uiHealth;
     bool isDead; //玩家是否死亡
     //随机数生成器
     std::mt19937 gen;

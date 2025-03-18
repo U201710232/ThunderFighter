@@ -7,6 +7,7 @@
 #include <random>
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <map>
 
 class Game;
 
@@ -59,6 +60,7 @@ private:
     std::list<projectileEnemy*> projectilesEnemy;
     std::list<Explosion*> explosions;
     std::list<Item*> items;
+    std::map<std::string, Mix_Chunk*> sounds;
 };
 
 #endif

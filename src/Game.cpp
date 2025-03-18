@@ -73,7 +73,12 @@ void Game::init()
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_Mixer could not open audio device! SDL_Error: %s\n", Mix_GetError());
         isRunning = false;  
     }
+    //设置音效channel数量
+    Mix_AllocateChannels(32);
+
+    //设置音乐音量
     Mix_VolumeMusic(MIX_MAX_VOLUME/4);
+    Mix_Volume(-1, MIX_MAX_VOLUME/8);
     currentScene = new SceneMain();
     currentScene->init();
     

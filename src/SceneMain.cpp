@@ -62,6 +62,14 @@ void SceneMain::init()
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load music: %s", Mix_GetError());
     }
     Mix_PlayMusic(bgm, -1);
+
+    //读取音效资源
+    sounds["player_shoot"] = Mix_LoadWAV("assets/sound/laser_shoot4.wav");
+    sounds["enemy_shoot"] = Mix_LoadWAV("assets/sound/xs_laser.wav");
+    sounds["player_explode"] = Mix_LoadWAV("assets/sound/explosion1.wav");
+    sounds["enemy_explode"] = Mix_LoadWAV("assets/sound/explosion3.wav");
+    sounds["hit"] = Mix_LoadWAV("assets/sound/eff11.wav");
+    sounds["get_item"] = Mix_LoadWAV("assets/sound/eff5.wav");
     
 
     isDead = false;
@@ -105,6 +113,14 @@ void SceneMain::init()
 void SceneMain::clean()
 {
     //清理容器
+    for (auto sound : sounds)
+    {
+        if (sound.second != nullptr){
+            Mix_FreeChunk(sound.second);
+        }
+        
+    }
+    sounds.clear();
     for (auto &projectile : projectilesPlayer)
     {
         if (projectile != nullptr)
@@ -232,6 +248,7 @@ void SceneMain::shootPlayer()
     projectile->position.x = player.position.x + player.width/2 - projectile->width/2;
     projectile->position.y = player.position.y;
     projectilesPlayer.push_back(projectile);
+    Mix_PlayChannel(0, sounds["player_shoot"], 0);
 }
 
 void SceneMain::updateProjectilesPlayer(float deltaTime)
@@ -255,6 +272,7 @@ void SceneMain::updateProjectilesPlayer(float deltaTime)
                     delete projectile;
                     it = projectilesPlayer.erase(it);
                     hit = true;
+                    Mix_PlayChannel(-1, sounds["hit"], 0);
                     break;
                 }
             }
@@ -342,6 +360,7 @@ void SceneMain::shootEnemy(Enemy* enemy)
     protile->position.y = enemy->position.y + enemy->height/2 - protile->height/2;
     protile->direction = getDirection(enemy);
     projectilesEnemy.push_back(protile);
+    Mix_PlayChannel(-1, sounds["enemy_shoot"], 0);
 }
 
 SDL_FPoint SceneMain::getDirection(Enemy *enemy)
@@ -371,23 +390,15 @@ void SceneMain::updateEnemyProjectiles(float deltaTime)
             it = projectilesEnemy.erase(it);
         }
         else{
-            SDL_Rect projectileRect = {
-                static_cast<int>(projectile->position.x),
-                static_cast<int>(projectile->position.y),
-                projectile->width,
-                projectile->height
-            };
-            SDL_Rect playerRect = {
-                static_cast<int>(player.position.x),
-                static_cast<int>(player.position.y),
-                player.width,
-                player.height
-            };
+            auto projectileRect = projectile->getRect();
+            auto playerRect = player.getRect();
+
             if (SDL_HasIntersection(&projectileRect, &playerRect) && isDead == false)
             {
                 player.currentHealth -= projectile->damage;
                 delete projectile;
                 it = projectilesEnemy.erase(it);
+                Mix_PlayChannel(-1, sounds["hit"], 0);
             }
             else {
                 ++it;
@@ -421,6 +432,7 @@ void SceneMain::enemyExplode(Enemy *enemy)
     explosion->position.y = enemy->position.y + enemy->height/2 - explosion->height/2;
     explosion->startTime = currentTime;
     explosions.push_back(explosion);
+    Mix_PlayChannel(-1, sounds["enemy_explode"], 0);
     if (dis(gen)<0.8){
         dropItem(enemy);
     }
@@ -434,6 +446,7 @@ void SceneMain::updatePlayer()
     }
     if (player.currentHealth <= 0){
         //game over
+        Mix_PlayChannel(-1, sounds["player_explode"], 0);
         isDead = true;
             auto currentTime = SDL_GetTicks();
             auto explosion = new Explosion(explosionTemplate);
@@ -567,4 +580,5 @@ void SceneMain::playerGetItem(Item *item)
             player.currentHealth = player.maxHealth;
         }
     }
+    Mix_PlayChannel(-1, sounds["get_item"], 0);
 }

@@ -1,4 +1,4 @@
-﻿#include "SceneMain.h"
+#include "SceneMain.h"
 #include "Game.h"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -56,6 +56,14 @@ void SceneMain::handleEvent(SDL_Event *event)
 
 void SceneMain::init()
 {
+    //载入背景音乐
+    bgm = Mix_LoadMUS("assets/music/03_Racing_Through_Asteroids_Loop.ogg");
+    if (bgm == nullptr){
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load music: %s", Mix_GetError());
+    }
+    Mix_PlayMusic(bgm, -1);
+    
+
     isDead = false;
     std::random_device rd;
     gen = std::mt19937(rd());
@@ -90,6 +98,8 @@ void SceneMain::init()
     SDL_QueryTexture(itemHealthTemplate.texture, NULL, NULL, &itemHealthTemplate.width, &itemHealthTemplate.height);
     itemHealthTemplate.width /= 2;
     itemHealthTemplate.height /= 2;
+
+
 }
 
 void SceneMain::clean()
@@ -154,6 +164,11 @@ void SceneMain::clean()
     }
     if (itemHealthTemplate.texture != nullptr) {
         SDL_DestroyTexture(itemHealthTemplate.texture);
+    }
+    //清理音乐资源
+    if(bgm!=nullptr){
+        Mix_HaltMusic();
+        Mix_FreeMusic(bgm);
     }
 }
 

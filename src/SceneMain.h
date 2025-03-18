@@ -5,6 +5,8 @@
 #include "Object.h"
 #include <list>
 #include <random>
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 class Game;
 
@@ -40,6 +42,7 @@ public:
 private:
     Player player;
     Game &game;
+    Mix_Music* bgm;
     bool isDead; //玩家是否死亡
     //随机数生成器
     std::mt19937 gen;

@@ -1,0 +1,10 @@
+^E:\GAMELEARNC\SDLSHOOTER\BUILD\CMAKEFILES\E209E47776BCD84A90DDD72F41A67A94\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SE:/gamelearnC/SDLshooter -BE:/gamelearnC/SDLshooter/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/gamelearnC/SDLshooter/build/SDLshooter.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

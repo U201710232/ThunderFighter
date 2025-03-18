@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "SDL.h"
+#include "Object.h"
 
 class Game
 {
@@ -26,6 +27,8 @@ public:
     SDL_Renderer* getRenderer() { return renderer; }  
     int getWindowWidth() { return windowWidth; }
     int getWindowHeight() { return windowHeight; }
+    void backgroundUpdate(float deltaTime);
+    void renderBackground();
 
 private:
     Game();
@@ -40,7 +43,8 @@ private:
     int FPS = 60;
     Uint32 frameTime;
     float deltaTime;
+    Background nearStars;
+    Background farStars;
 };
-
 
 #endif

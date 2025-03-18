@@ -546,7 +546,7 @@ void SceneMain::updateItems(float deltaTime)
             
             auto playerRect = player.getRect();
             auto itemRect = item->getRect();
-            if (SDL_HasIntersection(&playerRect, &itemRect))
+            if (SDL_HasIntersection(&playerRect, &itemRect)&& (isDead == false))
             {
                 playerGetItem(item);
                 delete item;
@@ -582,3 +582,4 @@ void SceneMain::playerGetItem(Item *item)
     }
     Mix_PlayChannel(-1, sounds["get_item"], 0);
 }
+

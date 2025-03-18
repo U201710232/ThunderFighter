@@ -5,6 +5,40 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 
+void Game::backgroundUpdate(float deltaTime)
+{
+    nearStars.offset += nearStars.speed * deltaTime;
+    if(nearStars.offset>0){
+        nearStars.offset -= nearStars.height;
+    }
+    farStars.offset += farStars.speed * deltaTime;
+    if(farStars.offset>0){
+        farStars.offset -= farStars.height;
+    }
+}
+
+void Game::renderBackground()
+{
+    int posY = static_cast<int>(nearStars.offset);
+    for (posY; posY < windowHeight; posY += nearStars.height)
+    {
+        for (int posX=0; posX < windowWidth; posX += nearStars.width)
+        {
+            SDL_Rect dstRect = {posX, posY, nearStars.width, nearStars.height};
+            SDL_RenderCopy(renderer, nearStars.texture, NULL, &dstRect);
+        }
+    }
+    posY = static_cast<int>(farStars.offset);
+    for (posY; posY < windowHeight; posY += farStars.height)
+    {
+        for (int posX=0; posX < windowWidth; posX += farStars.width)
+        {
+            SDL_Rect dstRect = {posX, posY, farStars.width, farStars.height};
+            SDL_RenderCopy(renderer, farStars.texture, NULL, &dstRect);
+        }
+    }
+}
+
 Game::Game()
 {
 }
@@ -79,6 +113,15 @@ void Game::init()
     //设置音乐音量
     Mix_VolumeMusic(MIX_MAX_VOLUME/4);
     Mix_Volume(-1, MIX_MAX_VOLUME/8);
+
+
+    //初始化背景卷轴
+    nearStars.texture = IMG_LoadTexture(renderer, "assets/image/Stars-A.png");
+    SDL_QueryTexture(nearStars.texture, NULL, NULL, &nearStars.width, &nearStars.height);
+    farStars.texture = IMG_LoadTexture(renderer, "assets/image/Stars-B.png");
+    SDL_QueryTexture(farStars.texture, NULL, NULL, &farStars.width, &farStars.height);
+    farStars.speed = 15;
+
     currentScene = new SceneMain();
     currentScene->init();
     
@@ -97,6 +140,12 @@ void Game::clean()
     {
         currentScene->clean();
         delete currentScene;
+    }
+    if(nearStars.texture != nullptr){
+        SDL_DestroyTexture(nearStars.texture);
+    }
+    if(farStars.texture != nullptr){
+        SDL_DestroyTexture(farStars.texture);
     }
     //清理SDL_Image
     IMG_Quit();
@@ -135,6 +184,7 @@ void Game::handleEvent(SDL_Event * event)
 
 void Game::update(float deltaTime)
 {
+    backgroundUpdate(deltaTime);
     currentScene->update(deltaTime);
 }
 
@@ -142,6 +192,9 @@ void Game::render()
 {
     //清空
     SDL_RenderClear(renderer);
+    //渲染星空背景
+    renderBackground();
+
     currentScene->render();
     //显示更新
     SDL_RenderPresent(renderer);

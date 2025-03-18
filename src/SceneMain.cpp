@@ -1,9 +1,10 @@
-#include "SceneMain.h"
+﻿#include "SceneMain.h"
 #include "Game.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
 #include <random>
+
 SceneMain::SceneMain() : game(Game::getInstance())
 {
 }
@@ -46,8 +47,8 @@ void SceneMain::render()
     renderItems();
     //渲染爆炸特效
     renderExplosions();
-    //渲染血量ui
-    renderHealthUI();
+    //渲染ui
+    renderUI();
     
     
 }
@@ -112,6 +113,9 @@ void SceneMain::init()
     //初始化ui
     uiHealth.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/Health UI Black.png");
     SDL_QueryTexture(uiHealth.texture, NULL, NULL, &uiHealth.width, &uiHealth.height);
+
+    //载入字体
+    scoreFont = TTF_OpenFont("assets/font/VonwaonBitmap-12px.ttf", 24);
 
 
 }
@@ -190,6 +194,10 @@ void SceneMain::clean()
     //清理ui
     if (uiHealth.texture != nullptr) {
         SDL_DestroyTexture(uiHealth.texture);
+    }
+    //清理字体
+    if (scoreFont != nullptr) {
+        TTF_CloseFont(scoreFont);
     }
     //清理音乐资源
     if(bgm!=nullptr){
@@ -446,7 +454,9 @@ void SceneMain::enemyExplode(Enemy *enemy)
     if (dis(gen)<0.8){
         dropItem(enemy);
     }
+    score += 10;
     delete enemy;
+    
 }
 
 void SceneMain::updatePlayer()
@@ -590,11 +600,13 @@ void SceneMain::playerGetItem(Item *item)
             player.currentHealth = player.maxHealth;
         }
     }
+    score += 5;
     Mix_PlayChannel(-1, sounds["get_item"], 0);
 }
 
-void SceneMain::renderHealthUI()
+void SceneMain::renderUI()
 {
+    //渲染血条
     for (int i = 0; i < player.maxHealth; i++)
     {
         SDL_Rect uiHealthRect = {uiHealth.position.x + i*uiHealth.offset, uiHealth.position.y, uiHealth.width, uiHealth.height};
@@ -609,4 +621,13 @@ void SceneMain::renderHealthUI()
             SDL_RenderCopy(game.getRenderer(), uiHealth.texture, NULL, &uiHealthRect);
         }
     }
+    //渲染得分score
+    auto text = "SCORE: " + std::to_string(score);
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Surface* surface = TTF_RenderUTF8_Solid(scoreFont, text.c_str(), textColor);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(game.getRenderer(), surface);
+    SDL_Rect textRect = {game.getWindowWidth() - 150, 10, surface->w, surface->h};
+    SDL_RenderCopy(game.getRenderer(), texture, NULL, &textRect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }

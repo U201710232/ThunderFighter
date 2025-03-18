@@ -114,6 +114,12 @@ void Game::init()
     Mix_VolumeMusic(MIX_MAX_VOLUME/4);
     Mix_Volume(-1, MIX_MAX_VOLUME/8);
 
+    //初始化SDL_ttf
+    if(TTF_Init() == -1){
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_ttf could not initialize! SDL_Error: %s\n", TTF_GetError());
+        isRunning = false;
+    }
+
 
     //初始化背景卷轴
     nearStars.texture = IMG_LoadTexture(renderer, "assets/image/Stars-A.png");

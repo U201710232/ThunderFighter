@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "SDL.h"
 #include "Object.h"
+#include <string>
 
 class Game
 {

@@ -16,37 +16,16 @@ class Game;
 
 class SceneMain : public Scene {
 public:
-    SceneMain();
+    // SceneMain();
     ~SceneMain();
-
-    void update(float deltaTime) override;
-    void render() override;
     void handleEvent(SDL_Event* event) override;
     void init() override;
     void clean() override;
-    void keyboardControl(float deltaTime);
-    void shootPlayer();
-    void updateProjectilesPlayer(float deltaTime);
-    void renderProjectilesPlayer();
-    void spawnEnemy();
-    void updateEnemies(float deltaTime);
-    void renderEnemies();
-    void shootEnemy(Enemy* enemy);
-    SDL_FPoint getDirection(Enemy* enemy);
-    void updateEnemyProjectiles(float deltaTime);
-    void renderEnemyProjectiles();
-    void enemyExplode(Enemy* enemy);
-    void updatePlayer();
-    void updateExplosions();
-    void renderExplosions();
-    void dropItem(Enemy* enemy);
-    void updateItems(float deltaTime);
-    void renderItems();
-    void playerGetItem(Item* item);
-    void renderUI();
+    void update(float deltaTime) override;
+    void render() override;
+
 private:
     Player player;
-    Game &game;
     Mix_Music* bgm;
     UiHealth uiHealth;
     TTF_Font* scoreFont;
@@ -68,6 +47,30 @@ private:
     std::list<Explosion*> explosions;
     std::list<Item*> items;
     std::map<std::string, Mix_Chunk*> sounds;
+
+    //渲染相关
+    void renderProjectilesPlayer();
+    void renderEnemies();
+    SDL_FPoint getDirection(Enemy* enemy);
+    void renderEnemyProjectiles();
+    void renderExplosions();
+    void renderItems();
+    void renderUI();
+    //更新相关
+    void updateProjectilesPlayer(float deltaTime);
+    void updateEnemyProjectiles(float deltaTime);
+    void updateEnemies(float deltaTime);
+    void updatePlayer();
+    void updateExplosions();
+    void updateItems(float deltaTime);
+    void keyboardControl(float deltaTime);
+    void spawnEnemy();
+    //其它
+    void shootPlayer();
+    void shootEnemy(Enemy* enemy);
+    void enemyExplode(Enemy* enemy);
+    void dropItem(Enemy* enemy);
+    void playerGetItem(Item* item);
 };
 
 #endif

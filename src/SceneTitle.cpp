@@ -33,6 +33,11 @@ void SceneTitle::init()
 
 void SceneTitle::clean()
 {
+    if (bgm != nullptr)
+    {
+        Mix_HaltMusic();
+        Mix_FreeMusic(bgm);
+    }
 }
 
 void SceneTitle::update(float deltaTime)

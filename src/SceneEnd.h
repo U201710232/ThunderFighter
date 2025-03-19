@@ -2,6 +2,8 @@
 #define SceneEnd_H
 
 #include "Scene.h"
+#include "SDL_mixer.h"
+
 class SceneEnd : public Scene{
 public:
     virtual void init();
@@ -11,6 +13,7 @@ public:
     virtual void handleEvent(SDL_Event* event);
 
 private:
+    Mix_Music* endBgm;
     float blinkTimer = 0;
     bool isTyping = true;
     std::string name;

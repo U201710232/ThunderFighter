@@ -17,12 +17,12 @@ class Game;
 class SceneMain : public Scene {
 public:
     // SceneMain();
-    ~SceneMain();
-    void handleEvent(SDL_Event* event) override;
-    void init() override;
-    void clean() override;
-    void update(float deltaTime) override;
-    void render() override;
+    virtual ~SceneMain();
+    virtual void handleEvent(SDL_Event* event) override;
+    virtual void init() override;
+    virtual void clean() override;
+    virtual void update(float deltaTime) override;
+    virtual void render() override;
 
 private:
     Player player;
@@ -30,6 +30,7 @@ private:
     UiHealth uiHealth;
     TTF_Font* scoreFont;
     int score = 0;
+    float timerEnd = 0;
     bool isDead; //玩家是否死亡
     //随机数生成器
     std::mt19937 gen;
@@ -71,6 +72,7 @@ private:
     void enemyExplode(Enemy* enemy);
     void dropItem(Enemy* enemy);
     void playerGetItem(Item* item);
+    void changeSceneDelayed(float deltaTime, float delay);
 };
 
 #endif

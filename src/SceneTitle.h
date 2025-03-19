@@ -11,12 +11,12 @@
 class SceneTitle : public Scene{
 public:
     SceneTitle();
-    ~SceneTitle();
-    void handleEvent(SDL_Event* event) override;
-    void init() override;
-    void clean() override;
-    void update(float deltaTime) override;
-    void render() override;
+    virtual ~SceneTitle();
+    virtual void handleEvent(SDL_Event* event) override;
+    virtual void init() override;
+    virtual void clean() override;
+    virtual void update(float deltaTime) override;
+    virtual void render() override;
 private:
     Mix_Music* bgm;
     float timer = 0;

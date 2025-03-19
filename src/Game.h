@@ -8,6 +8,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
+#include <map>
 
 class Game
 {
@@ -27,19 +28,27 @@ public:
     void update(float deltaTime);
     void render();
     //渲染工具函数
-    void renderTextCentered(std::string text, float posY, bool istitle);
+    SDL_Point renderTextCentered(std::string text, float posY, bool istitle);
+    SDL_Point renderTextPoint(std::string text, int x, int y, bool istitle, bool isLeft = true);
+    //setter
+    void setFinalScore(int score) { finalScore = score; }
     //getter
+    int getFinalScore() { return finalScore; }
+
+    
     SDL_Window* getWindow() { return window; }  
     SDL_Renderer* getRenderer() { return renderer; }  
     int getWindowWidth() { return windowWidth; }
     int getWindowHeight() { return windowHeight; }
-
+    std::multimap<int, std::string, std::greater<int>>& getLeaderBoard() { return leaderBoard; }
+    void insertLeaderBoard(int score, std::string name);  
 
 private:
     Game();
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
     bool isRunning = true;
+    int finalScore = 0;
     Scene* currentScene = nullptr;
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
@@ -50,10 +59,13 @@ private:
     int FPS = 60;
     Uint32 frameTime;
     float deltaTime;
+    std::multimap<int, std::string, std::greater<int>> leaderBoard;
     Background nearStars;
     Background farStars;
     void backgroundUpdate(float deltaTime);
+      
     void renderBackground();
+
 };
 
 #endif

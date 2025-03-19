@@ -33,6 +33,7 @@ add_executable(${TARGET}
                 "src/SceneTitle.cpp"
                 "src/Object.cpp"
                 "src/Scene.cpp"
+                "src/SceneEnd.cpp"
                 )
 
 #链接库

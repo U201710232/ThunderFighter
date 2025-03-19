@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include <SDL.h>
+#include <string>
 
 
 class Game;

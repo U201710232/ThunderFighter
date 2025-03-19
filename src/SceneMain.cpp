@@ -1,6 +1,7 @@
 ﻿#include "SceneMain.h"
 #include "Game.h"
 #include "SceneTitle.h"
+#include "SceneEnd.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
@@ -21,6 +22,10 @@ void SceneMain::update(float deltaTime)
     updatePlayer();
     updateExplosions();
     updateItems(deltaTime);
+    if (isDead) 
+    {
+        changeSceneDelayed(deltaTime, 3);
+    }
 }
 
 void SceneMain::render()
@@ -131,7 +136,6 @@ void SceneMain::clean()
         if (sound.second != nullptr){
             Mix_FreeChunk(sound.second);
         }
-        
     }
     sounds.clear();
     for (auto &projectile : projectilesPlayer)
@@ -471,12 +475,13 @@ void SceneMain::updatePlayer()
         //game over
         Mix_PlayChannel(-1, sounds["player_explode"], 0);
         isDead = true;
-            auto currentTime = SDL_GetTicks();
-            auto explosion = new Explosion(explosionTemplate);
-            explosion->position.x = player.position.x + player.width/2 - explosion->width/2;
-            explosion->position.y = player.position.y + player.height/2 - explosion->height/2;
-            explosion->startTime = currentTime;
-            explosions.push_back(explosion);
+        auto currentTime = SDL_GetTicks();
+        auto explosion = new Explosion(explosionTemplate);
+        explosion->position.x = player.position.x + player.width/2 - explosion->width/2;
+        explosion->position.y = player.position.y + player.height/2 - explosion->height/2;
+        explosion->startTime = currentTime;
+        explosions.push_back(explosion);
+        game.setFinalScore(score);
         return;
     }
     for(auto enemy : enemies)
@@ -605,6 +610,16 @@ void SceneMain::playerGetItem(Item *item)
     }
     score += 5;
     Mix_PlayChannel(-1, sounds["get_item"], 0);
+}
+
+void SceneMain::changeSceneDelayed(float deltaTime, float delay)
+{
+    timerEnd += deltaTime;
+    if (timerEnd >= delay)
+    {
+        auto sceneEnd = new SceneEnd();
+        game.changeScene(sceneEnd);
+    }
 }
 
 void SceneMain::renderUI()

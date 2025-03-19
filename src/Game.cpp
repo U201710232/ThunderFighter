@@ -18,6 +18,14 @@ void Game::backgroundUpdate(float deltaTime)
     }
 }
 
+void Game::insertLeaderBoard(int score, std::string name)
+{
+    leaderBoard.insert({score, name});
+    if(leaderBoard.size() > 8){
+        leaderBoard.erase(--leaderBoard.end());
+    }
+}
+
 void Game::renderBackground()
 {
     int posY = static_cast<int>(nearStars.offset);
@@ -190,9 +198,10 @@ void Game::changeScene(Scene* scene)
     {
         currentScene->clean();
         delete currentScene;
-        currentScene = scene;
-        currentScene->init();
     }
+    currentScene = scene;
+    currentScene->init();
+    
 }
 
 void Game::handleEvent(SDL_Event * event)
@@ -225,7 +234,7 @@ void Game::render()
     SDL_RenderPresent(renderer);
 }
 
-void Game::renderTextCentered(std::string text, float posY, bool istitle)
+SDL_Point Game::renderTextCentered(std::string text, float posY, bool istitle)
 {
     SDL_Color color = {255, 255, 255, 255};
     SDL_Surface* surface;
@@ -244,4 +253,33 @@ void Game::renderTextCentered(std::string text, float posY, bool istitle)
     SDL_RenderCopy(renderer, texture, NULL, &rect);
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
+    return {rect.x + rect.w, y};
 }
+
+SDL_Point Game::renderTextPoint(std::string text, int x, int y, bool istitle, bool isLeft)
+{
+    SDL_Color color = {255, 255, 255, 255};
+    SDL_Surface* surface;
+    if(istitle){
+        surface = TTF_RenderUTF8_Solid(titleFont, text.c_str(), color);
+    }else{
+        surface = TTF_RenderUTF8_Solid(textFont, text.c_str(), color);
+    }
+    if (surface == nullptr){
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL_ttf could not render text! SDL_Error: %s\n", TTF_GetError());
+        isRunning = false;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect rect;
+    if (isLeft){
+        rect = {static_cast<int>(x), static_cast<int>(y), surface->w, surface->h};
+    }
+    else{
+        rect = {static_cast<int>(getWindowWidth() - x - surface->w), static_cast<int>(y), surface->w, surface->h};
+    }
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+    return {x,y};
+}
+

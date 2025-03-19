@@ -112,7 +112,6 @@ void SceneMain::init()
 
     //初始化ui
     uiHealth.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/Health UI Black.png");
-    SDL_QueryTexture(uiHealth.texture, NULL, NULL, &uiHealth.width, &uiHealth.height);
 
     //载入字体
     scoreFont = TTF_OpenFont("assets/font/VonwaonBitmap-12px.ttf", 24);

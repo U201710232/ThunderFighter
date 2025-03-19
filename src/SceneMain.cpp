@@ -112,7 +112,7 @@ void SceneMain::init()
     explosionTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/effect/explosion.png");
     SDL_QueryTexture(explosionTemplate.texture, NULL, NULL, &explosionTemplate.width, &explosionTemplate.height);
     explosionTemplate.totalFrame = explosionTemplate.width/explosionTemplate.height;
-    explosionTemplate.width = explosionTemplate.height;
+    explosionTemplate.height;explosionTemplate.width = explosionTemplate.height;
 
     itemHealthTemplate.texture = IMG_LoadTexture(game.getRenderer(), "assets/image/bonus_life.png");
     SDL_QueryTexture(itemHealthTemplate.texture, NULL, NULL, &itemHealthTemplate.width, &itemHealthTemplate.height);
@@ -521,7 +521,7 @@ void SceneMain::renderExplosions()
     for(auto explosion : explosions)
     {
         SDL_Rect explosionDisRect = explosion->getDisRect();
-        SDL_Rect explosionRect = explosion->getRect();
+        SDL_Rect explosionRect = explosion->getRect(2.0f);
 
         SDL_RenderCopy(game.getRenderer(), explosion->texture, &explosionDisRect, &explosionRect);
     }

@@ -40,12 +40,12 @@ SDL_Rect Explosion::getDisRect()
                     height};
 }
 
-SDL_Rect Explosion::getRect()
+SDL_Rect Explosion::getRect(float scale)
 {
     return SDL_Rect{static_cast<int>(position.x),
                     static_cast<int>(position.y),
-                    width, 
-                    height};
+                    static_cast<int>(width * scale), 
+                    static_cast<int>(height * scale)};
 }
 
 SDL_Rect Item::getRect()

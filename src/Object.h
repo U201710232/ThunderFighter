@@ -66,7 +66,7 @@ struct Explosion
     Uint32 startTime = 0;
     Uint32 FPS = 10;
     SDL_Rect getDisRect();
-    SDL_Rect getRect();
+    SDL_Rect getRect(float scale = 1.0f);
 };
 
 struct Item{

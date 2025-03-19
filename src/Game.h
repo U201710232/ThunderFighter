@@ -63,8 +63,9 @@ private:
     Background nearStars;
     Background farStars;
     void backgroundUpdate(float deltaTime);
-      
     void renderBackground();
+    void saveData();
+    void loadData();
 
 };
 

@@ -114,7 +114,6 @@ void SceneEnd::renderPhase2()
     if(blinkTimer < 0.5f){
         game.renderTextCentered(u8"按J键重新开始游戏", 0.85, false);
     }
-    
 }
 
 void SceneEnd::removeLastUTF8Char(std::string &str)

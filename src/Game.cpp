@@ -1,10 +1,11 @@
-#include "Game.h"
+﻿#include "Game.h"
 #include "SceneMain.h"
 #include "SceneTitle.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
+#include <fstream>
 
 void Game::backgroundUpdate(float deltaTime)
 {
@@ -48,12 +49,43 @@ void Game::renderBackground()
     }
 }
 
+void Game::saveData()
+{
+    //保存得分榜的数据
+    std::ofstream file("assets/save.dat");
+    if(!file.is_open()){
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "File could not be opened! SDL_Error: %s\n");
+        return;
+    }
+    for (const auto& pair : leaderBoard)
+    {
+        file << pair.first << " " << pair.second << std::endl;
+    }
+    file.close();   
+}
+
+void Game::loadData()
+{
+    std::ifstream file("assets/save.dat");
+    if(!file.is_open()){
+        SDL_Log("File could not be opened!");
+        return;
+    }
+    leaderBoard.clear();
+    int score;
+    std::string name;
+    while(file >> score >> name){
+        leaderBoard.insert({score, name});
+    }
+}
+
 Game::Game()
 {
 }
 
 Game::~Game()
 {
+    saveData();
     clean();
 }
 
@@ -154,6 +186,9 @@ void Game::init()
     farStars.height /= 2;
     farStars.width /=2;
     farStars.speed = 15;
+
+    //载入得分
+    loadData();
 
     currentScene = new SceneTitle();
     currentScene->init();

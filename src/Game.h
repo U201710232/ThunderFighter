@@ -48,6 +48,7 @@ private:
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
     bool isRunning = true;
+    bool fullScreen = false;
     int finalScore = 0;
     Scene* currentScene = nullptr;
     SDL_Window* window = nullptr;
